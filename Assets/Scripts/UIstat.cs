@@ -1,11 +1,16 @@
 ﻿using UnityEngine;
 using TMPro;
-using System.Threading.Tasks;
 
 namespace Assets.Scripts
 {
     public class UIstat : MonoBehaviour
     {
+        private const string bestString = "Best";
+        private const string recordString = "Рекорд: ";
+        private const string crystalTag = "Crystal";
+        private const string enemyTag = "Enemy";
+
+        public MapClass mapClass = new MapClass();
         [SerializeField] private TextMeshProUGUI enemiesCountText;
         [SerializeField] private TextMeshProUGUI crystalCountText;
         [SerializeField] private TextMeshProUGUI playerLifesText;
@@ -13,59 +18,55 @@ namespace Assets.Scripts
         [SerializeField] private TextMeshProUGUI distanceToEnemy;
         [SerializeField] private TextMeshProUGUI distanceToCrystal;
         [SerializeField] private TextMeshProUGUI recordText;
-        private async void Start()
+        private ObjectPoolHandler crystalFather;
+        private ObjectPoolHandler enemyFather;
+
+
+        private void Start()
         {
-            await Task.Delay(50);
-            Enemy.EnemyHitCrystal += RefreshCrystalCount;
-            Player.PlayerGotCrystal += RefreshScoresCount;
-            Player.PlayerGotCrystal += RefreshCrystalCount;
-            Player.PlayerTouchEnemy += RefreshLifesCount;
-            CrystalFather.CrystalSpawn += RefreshCrystalCount;
-            EnemyFather.EnemyCountChange += RefreshEnemyCount;
+            CrystalFather.CountChanged += RefreshStats;
+            EnemyFather.CountChanged += RefreshStats;
             int bestResult = 0;
-            if (PlayerPrefs.HasKey("Best"))
-                bestResult = PlayerPrefs.GetInt("Best");
-            recordText.text = $"Рекорд: {bestResult}";
+            if (PlayerPrefs.HasKey(bestString))
+                bestResult = PlayerPrefs.GetInt(bestString);
+            recordText.text = $"{recordString} {bestResult}";
+            ObjectPoolHandler[] objectPoolHandlers = GameObject.FindObjectsOfType<ObjectPoolHandler>();
+            if (objectPoolHandlers.Length != 2)
+            {
+                Debug.LogError($"Unexpected count of father on the scene {objectPoolHandlers.Length}");
+                return;
+            }
+            if (objectPoolHandlers[0].MyObjectTag == crystalTag)
+            {
+                crystalFather = objectPoolHandlers[0];
+                enemyFather = objectPoolHandlers[1];
+            }
+            else
+            {
+                crystalFather = objectPoolHandlers[1];
+                enemyFather = objectPoolHandlers[0];
+            }
+            RefreshStats();
         }
 
-        private async void OnDestroy()
+        private void OnDestroy()
         {
-            Player.PlayerGotCrystal -= RefreshScoresCount;
-            Player.PlayerGotCrystal -= RefreshCrystalCount;
-            Player.PlayerTouchEnemy -= RefreshLifesCount;
-            CrystalFather.CrystalSpawn -= RefreshCrystalCount;
-            Enemy.EnemyHitCrystal -= RefreshCrystalCount;
-            EnemyFather.EnemyCountChange -= RefreshEnemyCount;
+            CrystalFather.CountChanged -= RefreshStats;
+            EnemyFather.CountChanged -= RefreshStats;
         }
 
-        private async void RefreshEnemyCount(GameObject obj)
+        private void RefreshStats()
         {
-            await Task.Delay(5);
-            enemiesCountText.text = EnemyFather.EnemyCount.ToString();
-        }
-
-        private async void RefreshCrystalCount(GameObject obj)
-        {
-            await Task.Delay(5);
-            crystalCountText.text = CrystalFather.CrystalCount.ToString();
-        }
-
-        private async void RefreshLifesCount(GameObject obj)
-        {
-            await Task.Delay(5);
+            enemiesCountText.text = enemyFather.ObjectsOnSceneCount.ToString();
+            crystalCountText.text = crystalFather.ObjectsOnSceneCount.ToString();
             playerLifesText.text = Player.Lifes.ToString();
-        }
-
-        private async void RefreshScoresCount(GameObject obj)
-        {
-            await Task.Delay(5);
             playerScoresText.text = Player.Scores.ToString();
         }
 
         private void FixedUpdate()
         {
-            distanceToCrystal.text = CrystalFather.GetClosestDistanceToPlayer().ToString("#0.0");
-            distanceToEnemy.text = EnemyFather.GetClosestDistanceToPlayer().ToString("#0.0");
+            distanceToCrystal.text = crystalFather.GetClosestDistanceToPlayer().ToString("#0.0");
+            distanceToEnemy.text = enemyFather.GetClosestDistanceToPlayer().ToString("#0.0");
         }
     }
 }

@@ -823,10 +823,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c171b17789ed93c4e8cb42036bd2512c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnIntervalInSeconds: 5
-  maxCrystalCount: 8
-  crystalPrefab: {fileID: 573967764528648396, guid: 96abd1d5fad55fe419a40754a38ac9d5,
+  objectSample: {fileID: 573967764528648396, guid: 96abd1d5fad55fe419a40754a38ac9d5,
     type: 3}
+  maxObjectsOnSceneCount: 5
+  spawnIntervalInSeconds: 5
+  ObjectsOnSceneCount: 0
 --- !u!4 &263225715
 Transform:
   m_ObjectHideFlags: 0
@@ -1452,6 +1453,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1101336682}
   m_CullTransparentMesh: 1
+--- !u!1 &1120811776
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1120811777}
+  m_Layer: 0
+  m_Name: EnemiesSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1120811777
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120811776}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.4000001, y: 0, z: -11.18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1380638351}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1146653617
 GameObject:
   m_ObjectHideFlags: 0
@@ -1620,7 +1651,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6, y: 0, z: 6}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1120811777}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1636,11 +1668,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7080f2c7c4908344c9d73978b6da6c42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 5927073103410451642, guid: 798b498d241f98548afc0d3e8c7b020f,
+  objectSample: {fileID: 5927073103410451642, guid: 798b498d241f98548afc0d3e8c7b020f,
     type: 3}
-  maxEnemiesCount: 3
-  spawnRadius: 5
+  maxObjectsOnSceneCount: 5
   spawnIntervalInSeconds: 5
+  ObjectsOnSceneCount: 0
+  spawnRadius: 0
+  spawnPoint: {fileID: 1120811777}
 --- !u!1 &1434047355
 GameObject:
   m_ObjectHideFlags: 0

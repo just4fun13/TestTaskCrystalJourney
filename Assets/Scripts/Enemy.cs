@@ -5,8 +5,8 @@ namespace Assets.Scripts
 {
     public class Enemy : Unit
     {
-        public delegate void EnemyHitCrystalEvent(GameObject crystalObject);
-        public static event EnemyHitCrystalEvent EnemyHitCrystal;
+        public delegate void BackToPoolEvent(GameObject objToReturn);
+        public static event BackToPoolEvent BackToPool;
 
         private float interval = 0.5f;
         private float mapSize = 10f;
@@ -41,8 +41,8 @@ namespace Assets.Scripts
         {
             if (collision.gameObject.CompareTag("Crystal"))
             {
-                if (EnemyHitCrystal != null)
-                    EnemyHitCrystal(collision.gameObject);
+                if (BackToPool != null)
+                    BackToPool(collision.gameObject);
                 collision.gameObject.SetActive(false);
             }
             MoveTo(RandomPointOnMap);

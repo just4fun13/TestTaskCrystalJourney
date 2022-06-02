@@ -6,10 +6,13 @@ namespace Assets.Scripts
 {
     public class Player : Unit
     {
-        public delegate void PlayerGotCrystalEvent(GameObject crystalObj);
-        public static event PlayerGotCrystalEvent PlayerGotCrystal;
-        public delegate void PlayerTouchEnemyEvent(GameObject enemyObj);
-        public static event PlayerTouchEnemyEvent PlayerTouchEnemy;
+        public delegate void BackToPoolEvent(GameObject crystalObj);
+        public static event BackToPoolEvent BackToPool;
+
+        private const string enemyTag = "Enemy";
+        private const string crystalTag = "Crystal";
+        private const string runAnimBoolParameterName = "IsRun";
+
         // we have only one player
         private static PlayerStat stats = new PlayerStat();
         public static int Scores => stats.crystalCount;
@@ -43,7 +46,7 @@ namespace Assets.Scripts
         private void Update()
         {
             base.Update();
-            animator.SetBool("IsRun", !IsArived);
+            animator.SetBool(runAnimBoolParameterName, !IsArived);
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -51,10 +54,10 @@ namespace Assets.Scripts
             ResetPath();
             if (inImmortalMode)
                 return;
-            if (collision.gameObject.CompareTag("Enemy"))
+            if (collision.gameObject.CompareTag(enemyTag) || collision.gameObject.CompareTag(crystalTag))
             {
-                if (PlayerTouchEnemy != null)
-                    PlayerTouchEnemy(collision.gameObject);
+                if (collision.gameObject.CompareTag(enemyTag))
+                {
                     Player.stats.GotDamaged();
                     if (Player.stats.IsAlive)
                     {
@@ -65,15 +68,14 @@ namespace Assets.Scripts
                         TryRecord();
                         SceneSwitcher.RestartTheGame();
                     }
-                collision.gameObject.SetActive(false);
+                }
+                else
+                {
+                    Player.stats.GetCrystal();
+                }
+                if (BackToPool != null)
+                    BackToPool(collision.gameObject);
             }
-            if (collision.gameObject.CompareTag("Crystal"))
-            {
-                if (PlayerGotCrystal != null)
-                    PlayerGotCrystal(collision.gameObject);
-                Player.stats.GetCrystal();
-                collision.gameObject.SetActive(false);
-            }    
         }
     }
 }
